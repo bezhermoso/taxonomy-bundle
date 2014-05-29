@@ -32,7 +32,6 @@ al_term:
 
 Annotations reside in the `\ActiveLAMP\TaxonomyBundle\Annotations` namespace.
 
-###Basic Usage
 Declare that your entity is a termed entity by tagging it with the `@Entity` annotation:
 
 ```php
@@ -71,7 +70,7 @@ class User
  
 ```
 
-And you might want to mock non-singular fields in the constructor method:
+And you might want to stub non-singular vocabulary fields in the constructor method:
 
 ```php
 <?php
@@ -94,29 +93,61 @@ $user = new User(); //Detached entity.
 $user->getLanguages()->removeElement($swahili);
 $user->getLanguages()->add($french);
 
-//If you didn't mock the `languages` property with an ArrayCollection instance, the last two calls will throw errors.
-
 ```
+If you didn't stub the `languages` property with an ArrayCollection instance, the last two calls will throw errors.
 
-#The Taxonomy service
+
+#The taxonomy service
 
 The taxonomy service can be retrieved from the service container at `al_taxonomy.taxonomy_service`.
 
-##Persisting taxonomies
+#Common operations
+
+###Retrieving vocabularies
 
 ```php
 <?php
 
+//Via the service:
+$languages = $service->findVocabularyByName("languages")
 
-    $service = $container->get('al_taxonomy.taxonomy_service');
+//Via the vocabulary field of a managed entity:
 
-    $user = $this->em->find('Your\Namespace\User', 1);
+$user = $em->find('Your\Namespace\User', 1);
+$languages = $user->getLanguages()->getVocabulary();
 
-    $user->getLanguages()->clear();
-    $user->getLanguages()->add($german);
+//From detached entities:
 
-    $service->saveTaxonomies($user);
+$user = new User();
+$service->loadVocabularyFields($user);
+$languages = $user->getLanguages()->getVocabulary();
 ```
 
+###Retrieving terms
 
+```php
+<?php
 
+//From a vocabulary object:
+
+$languages = $service->findVocabularyByName("languages");
+
+$french = $language->getTermByName('french');
+$filipino = $language->getTermByName('filipino');
+
+/* Will throw a \DomainException for non-existing terms. */
+$klingon = $language->getTermByName('klingon'); 
+```
+
+###Persisting taxonomies
+
+```php
+$user = $em->find('Your\Namespace\User', 1);
+$languages = $user->getLanguages()->getVocabulary();
+
+$user->getLanguages()->add($languages->getTermByName('french'));
+$user->getLanguages()->removeElement($languages->getTermByName('english'));
+
+$service->saveTaxonomies($user);
+
+```
