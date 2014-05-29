@@ -17,85 +17,113 @@ Steps:
 
 ```yml
 al_taxonomy:
-    resource: "@ALTaxonomyBundle/Controller/TaxonomyController.php"
-    type:     annotation
-
-al_term:
-    resource: "@ALTaxonomyBundle/Controller/TermController.php"
-    type:     annotation
+    resource: "@ALTaxonomyBundle/Resources/routing.yml"
+    prefix : /manage-taxonomies #This can be whatever you want.
 ```
 
-* Start using vocabularies with your entities using annotations.
+#Entity set-up
 
+You have to set-up your entities before you can start using them with taxonomies. This is done by adding a few annotations to the entity class and the properties you want to use taxonomies with. The annotations you are going to be using resides in the `\ActiveLAMP\TaxonomyBundle\Annotations` namespace.
 
-#Annotations
-
-Annotations reside in the `\ActiveLAMP\TaxonomyBundle\Annotations` namespace.
-
-Declare that your entity is a termed entity by tagging it with the `@Entity` annotation:
+1. Declare that your entity is a termed entity by tagging it with the `@Entity` annotation.
+2. Mark the properties which are going to be using vocabulary terms with the `@Vocabulary` annotation.
+3. Stub the vocabulary fields when necessary (more on this in the example below.):
 
 ```php
 <?php
 
+namespace Foo\BarBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
 use ActiveLAMP\TaxonomyBundle\Annotations as Taxn;
 
 /**
- *
- * @Taxn\Entity
+ * The identifier defaults to "id". However, since this entity uses the userId field
+ * as its primary key, then we should set identifier to "userId", like below:
+ * 
+ * @Taxn\Entity(identifier="userId")
  */
 class User
 {
 
+     /**
+      * @ORM\Id
+      */
+     protected $userId;
+    
+    /**
+     * This will contain an array of ActiveLAMP\TaxonomyBundle\Entity\Term objects 
+     * from the "languages" vocabulary that are linked to the entity.
+     *
+     * @Taxn\Vocabulary(name="languages")
+     */
+    protected $languages;
+   
+    /**
+     * This is a field that will contain a singular taxonomy term value instead
+     * instead of an array of them. 
+     * See the singular=true setting in the annotation below.
+     *
+     * This will contain a singular ActiveLAMP\TaxonomyBundle\Entity\Term object
+     * from the "organizations" vocabulary that is linked to the entity.
+     * 
+     * @Taxn\Vocabulary(name="organizations", singular=true)
+     */
+    protected $organization;
+   
+    public function __construct()
+    {
+        /*
+         * You might want to stub non-singular vocabulary fields with 
+         * an instance of ArrayCollection so that you can add, remove terms 
+         * on a non-managed/detached instance of this entity class.
+         * 
+         * i.e. 
+         * $user = new User();
+         * $user->getLanguages()->add($term);
+         * 
+         */
+        $this->languages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+   
+    public function getLanguages()
+    {
+        return $this->languages;
+    }
+   
+    public function setOrganization(\ActiveLAMP\TaxonomyBundle\Entity\Term $organization)
+    {
+       /*
+        * The taxonomy system would inject an instance of
+        * \ActiveLAMP\TaxonomyBundle\Entity\SingularVocabularyField
+        * into your entities during certain points in the entity's lifecycle.
+        *
+        * You might also want to check for this field as well and deal with terms
+        * appropriately.
+        *
+        * Although this is NOT necessary at all, it saves the taxonomy system
+        * some trips to the database in certain cases.
+        *
+        */
+       if ($this->organization instanceof
+       \ActiveLAMP\TaxonomyBundle\Entity\SingularVocabularyField) {
+           $this->organization->setTerm($organization);
+       } else {
+           $this->organization = $organization;
+       }
+   }
+   
+   public function getOrganization()
+   {
+        /*
+         * Nothing extra here, as SingularVocabularyField will just
+         * act like a Term object. So as far as you are concerned, treat
+         * this as a Term object.
+         */
+        return $this->organization;
+   }
 }
 ```
-
-...then mark the properties which are going to be using vocabulary terms with the `@Vocabulary` annotation:
-
-```php
-
-<?php
-
-
-   /**
-    *
-    * @Taxn\Vocabulary(name="languages")
-    */
-   protected $languages;
-   
-   /**
-    *
-    * @Taxn\Vocabulary(name="organizations", singular=true)
-    */
-   protected $organization;
- 
-```
-
-And you might want to stub non-singular vocabulary fields in the constructor method:
-
-```php
-<?php
-
-use Doctrine\Common\Collections\ArrayCollection;
-
-
-     public function __construct()
-     {
-         $this->languages = new ArrayCollection();
-     }
-     
-```
-
-This way the fields will behave as if taxonomy terms are already loaded even if the entity object is detached:
-
-```php
-
-$user = new User(); //Detached entity.
-$user->getLanguages()->removeElement($swahili);
-$user->getLanguages()->add($french);
-
-```
-If you didn't stub the `languages` property with an ArrayCollection instance, the last two calls will throw errors.
-
 
 #The taxonomy service
 
@@ -113,7 +141,7 @@ $languages = $service->findVocabularyByName("languages")
 
 //Via the vocabulary field of a managed entity:
 
-$user = $em->find('Your\Namespace\User', 1);
+$user = $em->find('Foo\BarBundle\Entity\User', 1);
 $languages = $user->getLanguages()->getVocabulary();
 
 //From detached entities:
@@ -138,16 +166,67 @@ $filipino = $language->getTermByName('filipino');
 /* Will throw a \DomainException for non-existing terms. */
 $klingon = $language->getTermByName('klingon'); 
 ```
+###Looping through an entity's taxonomy terms
+
+```php
+
+//With a managed entity:
+
+$user = $em->find('Foo\BarBundle\Entity\User', 1);
+
+foreach ($user->getLanguages() as $languageTerm) {
+     echo $languageTerm->getLabelName();
+}
+
+//With a detached entity:
+
+$user = new User();
+
+//This will yield nothing.
+foreach ($user->getLanguages() as $languageTerm) {
+    exit("Something you won't see.");
+}
+
+/*
+ *
+ * You would have to call TaxonomyService#loadVocabularyFields before 
+ * you can loop through attached terms.
+ */
+$service->loadVocabularyFields($user);
+
+foreach ($user->getLanguages() as $languageTerm) {
+     echo $languageTerm->getLabelName();
+}
+
+```
 
 ###Persisting taxonomies
 
 ```php
-$user = $em->find('Your\Namespace\User', 1);
+
+//Managed entities:
+$user = $em->find('Foo\BarBundle\Entity\User', 1);
 $languages = $user->getLanguages()->getVocabulary();
 
 $user->getLanguages()->add($languages->getTermByName('french'));
 $user->getLanguages()->removeElement($languages->getTermByName('english'));
 
 $service->saveTaxonomies($user);
+
+
+//How about detached entities?
+
+$user = new User();
+
+$user->setName("Albert Einstein");
+$user->getLanguages()
+    ->replace(array(
+        $languages->getTermByName('english'), 
+        $languages->getTermByName('german')
+    );
+    
+$em->persist($user);
+$em->flush();
+$service->saveTaxonomies($user); //No problem!
 
 ```
