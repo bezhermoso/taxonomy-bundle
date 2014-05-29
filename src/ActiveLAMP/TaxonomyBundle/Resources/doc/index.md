@@ -104,7 +104,7 @@ The taxonomy service can be retrieved from the service container at `al_taxonomy
 
 ##Persisting taxonomies
 
-```
+```php
 <?php
 
 
