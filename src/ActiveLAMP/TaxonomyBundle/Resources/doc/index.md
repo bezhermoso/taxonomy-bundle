@@ -188,7 +188,6 @@ foreach ($user->getLanguages() as $languageTerm) {
 }
 
 /*
- *
  * You would have to call TaxonomyService#loadVocabularyFields before 
  * you can loop through attached terms.
  */
@@ -223,7 +222,7 @@ $user->getLanguages()
     ->replace(array(
         $languages->getTermByName('english'), 
         $languages->getTermByName('german')
-    );
+    ));
     
 $em->persist($user);
 $em->flush();
