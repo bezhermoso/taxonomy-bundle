@@ -108,14 +108,14 @@ The taxonomy service can be retrieved from the service container at `al_taxonomy
 <?php
 
 
-$service = $container->get('al_taxonomy.taxonomy_service');
+    $service = $container->get('al_taxonomy.taxonomy_service');
 
-$user = $this->em->find('Your\Namespace\User', 1);
+    $user = $this->em->find('Your\Namespace\User', 1);
 
-$user->getLanguages()->clear();
-$user->getLanguages()->add($german);
+    $user->getLanguages()->clear();
+    $user->getLanguages()->add($german);
 
-$service->saveTaxonomies($user);
+    $service->saveTaxonomies($user);
 ```
 
 
