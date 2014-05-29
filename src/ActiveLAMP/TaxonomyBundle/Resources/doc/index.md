@@ -28,11 +28,12 @@ al_term:
 * Start using vocabularies with your entities using annotations.
 
 
-##Annotations
+#Annotations
 
 Annotations reside in the `\ActiveLAMP\TaxonomyBundle\Annotations` namespace.
 
-1. Specify that your entity contains vocabulary fields:
+###Basic Usage
+Declare that your entity is a termed entity by tagging it with the `@Entity` annotation:
 
 ```php
 <?php
@@ -49,21 +50,73 @@ class User
 }
 ```
 
-Mark which properties to use as vocabulary fields:
+...then mark the properties which are going to be using vocabulary terms with the `@Vocabulary` annotation:
 
 ```php
 
 <?php
 
+
    /**
     *
-    * @Taxn\Vocabulary("organization", singular=true)
+    * @Taxn\Vocabulary(name="languages")
+    */
+   protected $languages;
+   
+   /**
+    *
+    * @Taxn\Vocabulary(name="organizations", singular=true)
     */
    protected $organization;
  
-   /**
-    *
-    * @Taxn\Vocabulary("language", singular=false)
-    */
-   protected $languages;
 ```
+
+And you might want to mock non-singular fields in the constructor method:
+
+```php
+<?php
+
+use Doctrine\Common\Collections\ArrayCollection;
+
+
+     public function __construct()
+     {
+         $this->languages = new ArrayCollection();
+     }
+     
+```
+
+This way the fields will behave as if taxonomy terms are already loaded even if the entity object is detached:
+
+```php
+
+$user = new User(); //Detached entity.
+$user->getLanguages()->removeElement($swahili);
+$user->getLanguages()->add($french);
+
+//If you didn't mock the `languages` property with an ArrayCollection instance, the last two calls will throw errors.
+
+```
+
+#The Taxonomy service
+
+The taxonomy service can be retrieved from the service container at `al_taxonomy.taxonomy_service`.
+
+##Persisting taxonomies
+
+```
+<?php
+
+
+$service = $container->get('al_taxonomy.taxonomy_service');
+
+$user = $this->em->find('Your\Namespace\User', 1);
+
+$user->getLanguages()->clear();
+$user->getLanguages()->add($german);
+
+$service->saveTaxonomies($user);
+```
+
+
+
