@@ -1,24 +1,33 @@
 {
     "name": "activelamp/taxonomy-bundle",
-    "description": "Create vocabularies and terms with this bundle.",
-    "authors": [
+    "description": "Create vocabularies and terms in your Symfony2 application.",
+    "repositories" : [
         {
-            "name": "Tom Friedhof",
-            "email": "tom@activelamp.com"
-        },
+            "type" : "vcs",
+            "url" : "git@github.com:bezhermoso/taxonomy.git"
+        }
+    ],
+    "authors": [
         {
             "name" : "Bez Hermoso",
             "email" : "bez@activelamp.com"
+        },
+        {
+            "name" : "Tom Friedhof",
+            "email" : "tom@activelamp.com"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.3.0"
+    "minimum-stability" : "dev",
+    "require" : {
+        "php" : ">=5.3.0",
+        "activelamp/taxonomy" : "dev-master",
+        "symfony/framework-bundle" : "~2.1",
+        "symfony/console" : "~2.1"
     },
-    "license": "MIT",
-    "autoload": {
-        "psr-0": {
-            "ActiveLAMP\\Bundle\\TaxonomyBundle": "src/"
+    "license" : "MIT",
+    "autoload" : {
+        "psr-4" : {
+            "ActiveLAMP\\Bundle\\TaxonomyBundle\\" : ""
         }
     }
 }
