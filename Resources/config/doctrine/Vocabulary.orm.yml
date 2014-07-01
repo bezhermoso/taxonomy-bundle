@@ -1,0 +1,40 @@
+Vocabulary:
+    type: entity
+    table: taxonomy_vocabulary
+    repositoryClass: ActiveLAMP\Taxonomy\Entity\Repository\VocabularyRepository
+    fields:
+        id:
+            type: integer
+            unique: true
+            nullable: false
+            id: true
+            generator:
+                strategy: IDENTITY
+
+        labelName:
+            type: string
+            length: 255
+            unique: false
+            nullable: false
+            column: label_name
+
+        name:
+            type: string
+            length: 255
+            unique: false
+            nullable: false
+
+        description:
+            type: text
+            unique: false
+            nullable: false
+
+    oneToMany:
+        terms:
+            targetEntity: ActiveLAMP\Taxonomy\Entity\TermInterface
+            cascade:
+                - remove
+            mappedBy: vocabulary
+            inversedBy: null
+            orphanRemoval: false
+            orderBy: null

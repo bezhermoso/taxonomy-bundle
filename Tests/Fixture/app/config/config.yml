@@ -1,0 +1,46 @@
+framework:
+    csrf_protection:
+        enabled: true
+    router:
+        resource: %kernel.root_dir%/config/routing.yml
+    validation:
+        enabled: true
+        enable_annotations: false
+    form: ~
+    test: ~
+    default_locale: en
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        only_exceptions: false
+    templating:
+        engines:
+          - twig
+    secret: al_taxonomy_test
+
+twig:
+    debug: %kernel.debug%
+    strict_variables: %kernel.debug%
+
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver: pdo_sqlite
+                path: %kernel.cache_dir%/default.db
+
+            secondary:
+                driver: pdo_sqlite
+                path: %kernel.cache_dir%/secondary.db
+    orm:
+        entity_managers:
+            default: ~
+            secondary:
+                connection: secondary
+
+al_taxonomy:
+    taxonomies:
+        default: ~
+
+

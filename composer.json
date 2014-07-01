@@ -17,11 +17,13 @@
             "email" : "tom@activelamp.com"
         }
     ],
-    "minimum-stability" : "dev",
+    "minimum-stability" : "stable",
     "require" : {
         "php" : ">=5.3.0",
         "activelamp/taxonomy" : "dev-master",
+        "symfony/twig-bundle" : "~2.1",
         "symfony/framework-bundle" : "~2.1",
+        "doctrine/doctrine-bundle" : "1.2.*",
         "symfony/console" : "~2.1"
     },
     "license" : "MIT",

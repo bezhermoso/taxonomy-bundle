@@ -20,9 +20,20 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('al_taxonomy');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->arrayNode('taxonomies')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->addDefaultChildrenIfNoneSet()
+                        ->children()
+                            ->scalarNode('vocabulary_class')->default('%al_taxonomy.entity.vocabulary.class%')->end()
+                            ->scalarNode('term_class')->default('%al_taxonomy.entity.term.class%')->end()
+                            ->scalarNode('entity_term_class')->default('%al_taxonomy.entity.entity_term.class%')->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }

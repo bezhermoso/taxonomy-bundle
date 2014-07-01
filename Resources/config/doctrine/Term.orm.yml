@@ -1,0 +1,47 @@
+ActiveLAMP\Bundle\TaxonomyBundle\Entity\Term:
+    type: entity
+    table: taxonomy_term
+    repositoryClass: ActiveLAMP\Taxonomy\Doctrine\ORM\TermRepository
+    fields:
+        id:
+            type: integer
+            unique: true
+            nullable: false
+            id: true
+            generator:
+                strategy: IDENTITY
+        name:
+            type: string
+            length: 255
+            unique: true
+            nullable: false
+
+        label:
+            type: string
+            length: 255
+            unique: false
+            nullable: false
+
+        weight:
+            type: integer
+            length: null
+            unique: false
+            nullable: false
+
+    manyToOne:
+        vocabulary:
+            targetEntity: ActiveLAMP\Taxonomy\Entity\VocabularyInterface
+            inversedBy: terms
+            joinColumns:
+                vocabulary_id:
+                    referencedColumnName: id
+
+    oneToMany:
+        entityTerms:
+            targetEntity: ActiveLAMP\Taxonomy\Entity\EntityTermInterface
+            cascade:
+                - remove
+            mappedBy: term
+            inversedBy: null
+            orphanRemoval: false
+            orderBy: null
