@@ -31,6 +31,10 @@ class ALTaxonomyExtension extends Extension
         $loader->load('services.yml');
         $loader->load('forms.yml');
 
+        if (count($config['taxonomies']) == 0) {
+            $config['taxonomies']['default'] = array();
+        }
+
         $this->prepareTaxonomyLoader($container);
         $this->prepareTaxonomies($config, $container);
     }
