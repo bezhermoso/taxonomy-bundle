@@ -1,6 +1,8 @@
 parameters:
-    al_taxonomy.vocabulary.class: ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary
-    al_taxonomy.term.class: ActiveLAMP\Bundle\TaxonomyBundle\Entity\Term
+    al_taxonomy.entity.vocabulary.class: ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary
+    al_taxonomy.entity.term.class: ActiveLAMP\Bundle\TaxonomyBundle\Entity\Term
+    al_taxonomy.entity.entity_term.class: ActiveLAMP\Bundle\TaxonomyBundle\Entity\EntityTerm
+    al_taxonomy.taxonomy_service.class: ActiveLAMP\Taxonomy\Taxonomy\TaxonomyService
 
 services:
 
@@ -12,18 +14,18 @@ services:
             - { name: kernel.event_subscriber }
 
     al_taxonomy.vocabulary_repository:
-        class: ActiveLAMP\Bundle\TaxonomyBundle\Model\VocabularyRepositoryInterface
+        class: ActiveLAMP\Taxonomy\Model\VocabularyRepositoryInterface
         factory_service: doctrine.orm.entity_manager
         factory_method: getRepository
         arguments:
-            - %al_taxonomy.vocabulary.class%
+            - %al_taxonomy.entity.vocabulary.class%
 
     al_taxonomy.term_repository:
-        class: ActiveLAMP\Bundle\TaxonomyBundle\Model\TermRepositoryInterface
+        class: ActiveLAMP\Taxonomy\Model\TermRepositoryInterface
         factory_service: doctrine.orm.entity_manager
         factory_method: getRepository
         arguments:
-            - %al_taxonomy.term.class%
+            - %al_taxonomy.entity.term.class%
 
     al_taxonomy.taxonomy_service:
         class: ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\TaxonomyService
