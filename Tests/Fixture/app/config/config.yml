@@ -29,18 +29,22 @@ doctrine:
             default:
                 driver: pdo_sqlite
                 path: %kernel.cache_dir%/default.db
-
             secondary:
                 driver: pdo_sqlite
                 path: %kernel.cache_dir%/secondary.db
     orm:
         entity_managers:
-            default: ~
+            default:
+              mappings:
+                ALTaxonomyBundle: ~
             secondary:
                 connection: secondary
+                mappings:
+                  ALTaxonomyBundle: ~
 
 al_taxonomy:
     taxonomies:
         default: ~
+        secondary: ~
 
 

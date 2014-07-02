@@ -22,12 +22,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('default_taxonomy')->defaultValue('default')->cannotBeEmpty()->end()
                 ->arrayNode('taxonomies')
                     ->info('Taxonomy configuration for specific entity managers.')
                     ->useAttributeAsKey('default')
                     ->prototype('array')
                         ->addDefaultsIfNotSet()
                         ->children()
+                            ->scalarNode('connection')->defaultValue(null)->end()
                             ->scalarNode('vocabulary_class')->defaultValue(null)->end()
                             ->scalarNode('term_class')->defaultValue(null)->end()
                             ->scalarNode('entity_term_class')->defaultValue(null)->end()

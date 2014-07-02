@@ -15,7 +15,7 @@ class VocabularyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('labelName')
+            ->add('label')
             ->add('name')
             ->add('description')
         ;
@@ -36,6 +36,6 @@ class VocabularyType extends AbstractType
      */
     public function getName()
     {
-        return 'activelamp_taxonomybundle_vocabulary';
+        return 'al_taxonomy_vocabulary';
     }
 }

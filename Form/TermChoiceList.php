@@ -12,6 +12,7 @@ use ActiveLAMP\Bundle\TaxonomyBundle\Entity\Term;
 use ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary;
 use ActiveLAMP\Bundle\TaxonomyBundle\Entity\VocabularyFieldInterface;
 use ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\AbstractTaxonomyService;
+use ActiveLAMP\Taxonomy\Taxonomy\TaxonomyServiceInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ObjectChoiceList;
@@ -31,8 +32,14 @@ class TermChoiceList implements ChoiceListInterface
 
     protected $choices = array();
 
+    /**
+     * @var string
+     */
     protected $vocabulary;
 
+    /**
+     * @var \ActiveLAMP\Taxonomy\Taxonomy\TaxonomyServiceInterface
+     */
     protected $taxonomy;
 
     /**
@@ -40,7 +47,11 @@ class TermChoiceList implements ChoiceListInterface
      */
     protected $objectChoiceList;
 
-    public function __construct(AbstractTaxonomyService $taxonomy, $vocabulary)
+    /**
+     * @param TaxonomyServiceInterface $taxonomy
+     * @param $vocabulary
+     */
+    public function __construct(TaxonomyServiceInterface $taxonomy, $vocabulary)
     {
         $this->taxonomy = $taxonomy;
         $this->vocabulary = $vocabulary;

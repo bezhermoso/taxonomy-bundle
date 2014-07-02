@@ -6,6 +6,7 @@ use ActiveLAMP\Bundle\TaxonomyBundle\ALTaxonomyBundle;
 use ActiveLAMP\Bundle\TaxonomyBundle\Tests\Fixture\ALTaxonomyTestBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -32,6 +33,7 @@ class AppKernel extends Kernel
             new FrameworkBundle(),
             new DoctrineBundle(),
             new ALTaxonomyBundle(),
+            new TwigBundle(),
             new ALTaxonomyTestBundle(),
         );
     }

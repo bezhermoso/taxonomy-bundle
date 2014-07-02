@@ -15,7 +15,7 @@ class TermType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('labelName', 'text', array(
+            ->add('label', 'text', array(
                 'label' => 'Label name',
             ))
             ->add('name', 'text', array(
@@ -40,6 +40,6 @@ class TermType extends AbstractType
      */
     public function getName()
     {
-        return 'activelamp_taxonomybundle_term';
+        return 'al_taxonomy_term';
     }
 }

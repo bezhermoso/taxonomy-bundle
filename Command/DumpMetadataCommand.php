@@ -8,8 +8,8 @@
 
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Command;
 
-use ActiveLAMP\Bundle\TaxonomyBundle\Metadata\MetadataFactory;
-use ActiveLAMP\Bundle\TaxonomyBundle\Metadata\Reader\AnnotationReader;
+use ActiveLAMP\Taxonomy\Metadata\MetadataFactory;
+use ActiveLAMP\Taxonomy\Metadata\Reader\AnnotationReader;
 use Doctrine\Bundle\DoctrineBundle\Command\Proxy\DoctrineCommandHelper;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -49,15 +49,6 @@ class DumpMetadataCommand extends ContainerAwareCommand
 
         $factory = new MetadataFactory(new AnnotationReader());
         $metadatas = $factory->getMetadata($em);
-
-
-        /*$metadataReader = $this->getContainer()->get('al_taxonomy.subscriber.read_metadata');
-
-        $metadataReader->onRequest();
-
-        $metadata = $this->getContainer()->get('al_taxonomy.metadata');
-
-        $metadatas = $metadata->getAllEntityMetadata();*/
 
         $lines = array();
 

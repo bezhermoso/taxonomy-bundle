@@ -12,6 +12,7 @@ use ActiveLAMP\Bundle\TaxonomyBundle\Metadata\Entity;
 use ActiveLAMP\Bundle\TaxonomyBundle\Metadata\Reader\AnnotationReader;
 use ActiveLAMP\Bundle\TaxonomyBundle\Metadata\TaxonomyMetadata;
 use ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\AbstractTaxonomyService;
+use ActiveLAMP\Taxonomy\Taxonomy\TaxonomyServiceInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -27,9 +28,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ReadMetadata implements EventSubscriberInterface
 {
     /**
-     * @param AbstractTaxonomyService $service
+     * @param TaxonomyServiceInterface $service
      */
-    public function __construct(AbstractTaxonomyService $service)
+    public function __construct(TaxonomyServiceInterface $service)
     {
         $this->service = $service;
     }

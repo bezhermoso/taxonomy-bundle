@@ -9,7 +9,9 @@
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Form;
 
 use ActiveLAMP\Bundle\TaxonomyBundle\Form\DataTransformer\SingularVocabularyFieldTransformer;
+use ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\TaxonomyRegistry;
 use ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\TaxonomyService;
+use ActiveLAMP\Taxonomy\Taxonomy\TaxonomyServiceInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\Options;
@@ -24,38 +26,23 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  */
 class SingularVocabularyFieldType extends AbstractType
 {
-    protected $service;
-
-    protected $vocabularyCache;
-
-    public function __construct(TaxonomyService $service)
-    {
-        $this->service = $service;
-    }
+    /**
+     * @var TaxonomyRegistry
+     */
+    protected $registry;
 
     /**
-     * @param $name
-     * @throws \OutOfBoundsException
-     * @return \ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary
+     * @param \ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\TaxonomyRegistry $registry
+     *  m
      */
-    protected function getVocabulary($name)
+    public function __construct(TaxonomyRegistry $registry)
     {
-        if (isset($this->vocabularyCache[$name])) {
-            return $this->vocabularyCache[$name];
-        }
-        $vocabulary = $this->service->findVocabularyByName($name);
-        if (!$vocabulary) {
-            throw new \OutOfBoundsException(sprintf('Cannot find vocabulary named "%s"', $name));
-        }
-        $this->vocabularyCache[$name] = $vocabulary;
-        return $vocabulary;
+        $this->registry = $registry;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
-        //$transformer = new SingularVocabularyFieldTransformer($options['taxonomy_service'], $options['vocabulary']);
-        //$builder->addModelTransformer($transformer);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -64,17 +51,28 @@ class SingularVocabularyFieldType extends AbstractType
         parent::setDefaultOptions($resolver);
 
         $resolver->setDefaults(array(
-            'taxonomy_service' => $this->service,
+            'taxonomy_service' => $this->registry,
             'choice_list' => function (Options $options) {
                 return new TermChoiceList($options['taxonomy_service'], $options['vocabulary']);
             }
+        ));
+
+        $registry = $this->registry;
+        $resolver->setNormalizers(array(
+            'taxonomy_service' =>
+                function (Options $options, $value) use ($registry) {
+                    if (is_string($value)) {
+                        $value = $registry->getTaxonomyForManager($value);
+                    }
+                    return $value;
+                }
         ));
 
         $resolver->setRequired(array(
             'vocabulary'
         ))
         ->setAllowedTypes(array(
-                'taxonomy_service' => array('ActiveLAMP\\Bundle\\TaxonomyBundle\\Taxonomy\\AbstractTaxonomyService'),
+            'taxonomy_service' => array('ActiveLAMP\\Taxonomy\\Taxonomy\\TaxonomyServiceInterface', 'string'),
         ))
         ;
     }

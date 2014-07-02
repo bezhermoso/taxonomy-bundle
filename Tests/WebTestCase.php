@@ -3,7 +3,7 @@
 
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseTestCase
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseTestCase;
 
 /**
  * @author Bez Hermoso <bez@activelamp.com>
@@ -26,7 +26,7 @@ class WebTestCase extends BaseTestCase
     protected static function getKernelClass()
     {
         require_once __DIR__ . '/Fixture/app/AppKernel.php';
-        return 'ActiveLAMP\\Bundle\\TaxonomyBundle\\Tests\\Fixture\\AppKernel';
+        return 'ActiveLAMP\\Bundle\\TaxonomyBundle\\Tests\\Fixture\\Application\\AppKernel';
     }
 
     /**

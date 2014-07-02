@@ -4,6 +4,7 @@ namespace ActiveLAMP\Bundle\TaxonomyBundle\DependencyInjection;
 
 use ActiveLAMP\Bundle\TaxonomyBundle\DependencyInjection\Configuration;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Definition;
@@ -32,9 +33,6 @@ class ALTaxonomyExtension extends Extension
 
         $this->prepareTaxonomyLoader($container);
         $this->prepareTaxonomies($config, $container);
-
-
-        //exit;
     }
 
     /**
@@ -62,6 +60,13 @@ class ALTaxonomyExtension extends Extension
         foreach ($config['taxonomies'] as $em => $taxonomy) {
             $this->prepareTaxonomy($taxonomy, $em, $container);
         }
+
+        if (!isset($config['taxonomies'][$config['default_taxonomy']])) {
+            throw new \InvalidArgumentException(sprintf('Cannot find "%s" taxonomy, thus cannot set it as default', $config['default_taxonomy']));
+        }
+
+        $container->getDefinition('al_taxonomy.taxonomy_service')->replaceArgument(1, $config['default_taxonomy']);
+        $container->setParameter('al_taxonomy.default_taxonomy', $config['default_taxonomy']);
     }
 
     public function prepareTaxonomy(array $taxonomyConfig, $emName, ContainerBuilder $container)
@@ -71,6 +76,7 @@ class ALTaxonomyExtension extends Extension
             'term_class' => $container->getParameter('al_taxonomy.entity.term.class'),
             'entity_term_class' => $container->getParameter('al_taxonomy.entity.entity_term.class'),
             'taxonomy_service_class' => $container->getParameter('al_taxonomy.taxonomy_service.class'),
+            'connection' => $emName,
         );
 
         $taxonomyConfig = array_replace_recursive($defaults, array_filter($taxonomyConfig));
@@ -97,6 +103,7 @@ class ALTaxonomyExtension extends Extension
     protected function attachResolveTargetListener(array $config, $emName, ContainerBuilder $container)
     {
         $definition = new Definition('Doctrine\ORM\Tools\ResolveTargetEntityListener');
+
         $definition->addMethodCall('addResolveTargetEntity', array(
             'ActiveLAMP\\Taxonomy\\Entity\\VocabularyInterface',
             $config['vocabulary_class'],
@@ -112,7 +119,11 @@ class ALTaxonomyExtension extends Extension
             $config['entity_term_class'],
             array(),
         ));
+        $definition->addTag('doctrine.event_listener', array(
+            'event' => 'loadClassMetadata',
+            'connection' => $config['connection'],
+        ));
 
-        //$em = $container->getDefinition(sprintf('doctrine.orm.%s_entity_manager', $emName));
+        $container->setDefinition('al_taxonomy.doctrine.resolve_target_entities.' . $emName, $definition);
     }
 }

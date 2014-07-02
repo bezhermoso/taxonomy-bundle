@@ -1,7 +1,7 @@
-ActiveLAMP\Bundle\TaxonomyBundle\Entiity\EntityTerm:
+ActiveLAMP\Bundle\TaxonomyBundle\Entity\EntityTerm:
     type: entity
     table: taxonomy_entity_term
-    repositoryClass: ActiveLAMP\Taxonomy\Entity\Repository\EntityTermRepository
+    repositoryClass: ActiveLAMP\Taxonomy\Doctrine\ORM\EntityTermRepository
     fields:
         id:
             type: integer
@@ -26,7 +26,7 @@ ActiveLAMP\Bundle\TaxonomyBundle\Entiity\EntityTerm:
 
     manyToOne:
         term:
-            targetEntity: ActiveLAMP\Bundle\TaxonomyBUndle\Entity\TermInterface
+            targetEntity: ActiveLAMP\Taxonomy\Entity\TermInterface
             inversedBy: entityTerms
             joinColumns:
                 term_id:

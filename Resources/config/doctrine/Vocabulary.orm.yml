@@ -1,7 +1,7 @@
-Vocabulary:
+ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary:
     type: entity
     table: taxonomy_vocabulary
-    repositoryClass: ActiveLAMP\Taxonomy\Entity\Repository\VocabularyRepository
+    repositoryClass: ActiveLAMP\Taxonomy\Doctrine\ORM\VocabularyRepository
     fields:
         id:
             type: integer
@@ -11,12 +11,12 @@ Vocabulary:
             generator:
                 strategy: IDENTITY
 
-        labelName:
+        label:
             type: string
             length: 255
             unique: false
             nullable: false
-            column: label_name
+            column: label
 
         name:
             type: string
