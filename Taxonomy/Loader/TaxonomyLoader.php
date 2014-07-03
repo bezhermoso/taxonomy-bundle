@@ -72,7 +72,7 @@ class TaxonomyLoader
         $vocab->setName($name);
 
         if (is_string($data)) {
-            $vocab->setLabelName($data);
+            $vocab->setLabel($data);
             return $vocab;
         }
 
@@ -82,7 +82,7 @@ class TaxonomyLoader
         );
 
         $data = array_merge($proto, $data);
-        $vocab->setLabelName($data['label']);
+        $vocab->setLabel($data['label']);
         $vocab->setDescription($data['description']);
 
 
@@ -103,7 +103,7 @@ class TaxonomyLoader
         $term->setName($name);
 
         if (is_string($data)) {
-            $term->setLabelName($data);
+            $term->setLabel($data);
             return $term;
         }
 
@@ -114,7 +114,7 @@ class TaxonomyLoader
 
         $data = array_merge($proto, $data);
 
-        $term->setLabelName($data['label']);
+        $term->setLabel($data['label']);
         $term->setWeight($data['weight']);
 
 

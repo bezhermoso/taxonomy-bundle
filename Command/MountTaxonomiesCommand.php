@@ -44,7 +44,7 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
         foreach ($loader->getVocabularies() as $vocab) {
 
             if (null !== ($vocabulary = $service->findVocabularyByName($vocab->getName()))) {
-                $vocabulary->setLabelName($vocab->getLabelName());
+                $vocabulary->setLabel($vocab->getLabel());
                 $vocabulary->setDescription($vocab->getDescription());
             } else {
                 $vocabulary = $vocab;
@@ -55,7 +55,7 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
 
         foreach ($loader->getTerms() as $t) {
             if (null !== ($term = $service->findTermByName($t->getName()))) {
-                $term->setLabelName($t->getLabelName());
+                $term->setLabel($t->getLabel());
                 $term->setWeight($t->getWeight());
             } else {
                 $term = $t;
