@@ -1,6 +1,6 @@
 {% extends 'ALTaxonomyBundle::layout.html.twig' %}
 
-{% block taxonomy_title %}<h1>Vocabulary <em>{{ entity.labelName }}</em></h1>{% endblock %}
+{% block taxonomy_title %}<h1>Vocabulary <em>{{ entity.label }}</em></h1>{% endblock %}
 
 {% block taxonomy_content -%}
 
@@ -12,7 +12,7 @@
             </tr>
             <tr>
                 <th>Vocabulary Label</th>
-                <td>{{ entity.labelName }}</td>
+                <td>{{ entity.label }}</td>
             </tr>
             <tr>
                 <th>Machine Name</th>

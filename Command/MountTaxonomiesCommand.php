@@ -9,6 +9,7 @@
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -25,6 +26,7 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
         $this
             ->setName('taxonomy:vocabulary:mount')
             ->setAliases(array('tax:mnt'))
+            ->addOption('em', null, InputOption::VALUE_OPTIONAL, 'Entity manager to mount to.', null)
             ->setDescription('Mount taxonomies found in YAML config files in all bundles.');
     }
 
@@ -32,6 +34,10 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
     {
         $service = $this->getContainer()->get('al_taxonomy.taxonomy_service');
         $loader = $this->getContainer()->get('al_taxonomy.taxonomy_loader');
+
+        if ($input->getOption('em') === null) {
+            $service = $service->getTaxonomyForManager($input->getOption('em'));
+        }
 
         $vocabs = array();
 

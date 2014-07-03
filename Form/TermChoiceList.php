@@ -61,7 +61,7 @@ class TermChoiceList implements ChoiceListInterface
     {
         if ($this->initialized === false) {
             $terms = $this->taxonomy->findTermsInVocabulary($this->vocabulary);
-            $this->objectChoiceList = new ObjectChoiceList($terms, 'labelName', array(), null, 'name');
+            $this->objectChoiceList = new ObjectChoiceList($terms, 'label', array(), null, 'name');
         }
 
         $this->initialized = true;

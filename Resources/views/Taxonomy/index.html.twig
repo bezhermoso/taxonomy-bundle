@@ -18,7 +18,7 @@
             {% for entity in entities %}
                 <tr>
                     <td><a href="{{ path('al_taxonomy_show_vocabulary', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                    <td>{{ entity.labelName }}</td>
+                    <td>{{ entity.label }}</td>
                     <td>{{ entity.name }}</td>
                     <td>{{ entity.description }}</td>
                     <td>

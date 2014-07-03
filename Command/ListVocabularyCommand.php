@@ -12,6 +12,7 @@ use ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
@@ -29,12 +30,17 @@ class ListVocabularyCommand extends ContainerAwareCommand
             ->setName('taxonomy:vocabulary:list')
             ->setAliases(array('tax:ls'))
             ->setDescription('List terms of a given vocabulary.')
+            ->addOption('em', null, InputOption::VALUE_OPTIONAL, 'The entity-manager from where to view.', null)
             ->addArgument('vocabulary', InputArgument::OPTIONAL, 'List terms of which vocabulary?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $service = $this->getContainer()->get('al_taxonomy.taxonomy_service');
+
+        if ($input->getOption('em') !== null) {
+            $service = $this->getContainer()->get('al_taxonomy.taxonomy_service')->getTaxonomyForManager($input->getOption('em'));
+        }
 
         $vocabularyName = $input->getArgument('vocabulary');
 
@@ -46,8 +52,7 @@ class ListVocabularyCommand extends ContainerAwareCommand
                 $vocabularies[] = $service->findVocabularyByName($vocabularyName);
             }
         } else {
-            $vocabularies = $this->getContainer()->get('doctrine.orm.entity_manager')
-                                 ->getRepository('ALTaxonomyBundle:Vocabulary')->findAll();
+            $vocabularies = $service->findAllVocabularies();
         }
 
         $output->writeln('');
@@ -79,7 +84,7 @@ class ListVocabularyCommand extends ContainerAwareCommand
 
         foreach ($terms as $term) {
             $lines[] = sprintf('    <info>%s:</info>', $term->getName());
-            $lines[] = sprintf('        label: <comment>"%s"</comment>', $term->getLabelName());
+            $lines[] = sprintf('        label: <comment>"%s"</comment>', $term->getLabel());
             $lines[] = sprintf('        weight: <comment>%d</comment>', $term->getWeight());
         }
         $lines[] = '';

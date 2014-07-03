@@ -7,12 +7,12 @@
  */
 
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Validation\Constraint;
-use ActiveLAMP\Bundle\TaxonomyBundle\Entity\PluralVocabularyField;
-use ActiveLAMP\Bundle\TaxonomyBundle\Entity\SingularVocabularyField;
+
 use ActiveLAMP\Bundle\TaxonomyBundle\Entity\Term;
-use ActiveLAMP\Bundle\TaxonomyBundle\Entity\VocabularyFieldInterface;
-use ActiveLAMP\Bundle\TaxonomyBundle\Taxonomy\TaxonomyService;
 use ActiveLAMP\Bundle\TaxonomyBundle\Validation\Constraint\VocabularyField;
+use ActiveLAMP\Taxonomy\Entity\PluralVocabularyField;
+use ActiveLAMP\Taxonomy\Entity\SingularVocabularyField;
+use ActiveLAMP\Taxonomy\Taxonomy\TaxonomyServiceInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -27,7 +27,7 @@ class VocabularyFieldValidator extends ConstraintValidator
 {
     protected $service;
 
-    public function __construct(TaxonomyService $service)
+    public function __construct(TaxonomyServiceInterface $service)
     {
         $this->service = $service;
     }
