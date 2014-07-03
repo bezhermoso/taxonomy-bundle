@@ -39,7 +39,7 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
             $service = $service->getTaxonomyForManager($input->getOption('em'));
         }
 
-        $vocabs = array();
+        $vocabs = $terms = array();
 
         foreach ($loader->getVocabularies() as $vocab) {
 
@@ -49,8 +49,8 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
             } else {
                 $vocabulary = $vocab;
             }
-            $vocabs[$vocab->getName()] = $vocabulary;
-            $service->saveVocabulary($vocabulary);
+            $vocabs[$vocabulary->getName()] = $vocabulary;
+            $service->saveVocabulary($vocabulary, false);
         }
 
         foreach ($loader->getTerms() as $t) {
@@ -61,7 +61,12 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
                 $term = $t;
             }
             $term->setVocabulary($vocabs[$term->getVocabulary()->getName()]);
-            $service->saveTerm($term);
+            $service->saveTerm($term, false);
+            $terms[$term->getName()] = $terms;
         }
+
+        $service->getEntityManager()->flush();
+
+
     }
 } 

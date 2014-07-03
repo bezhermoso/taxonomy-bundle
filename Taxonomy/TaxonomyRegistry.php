@@ -80,10 +80,12 @@ class TaxonomyRegistry implements TaxonomyServiceInterface
 
     /**
      * @param VocabularyInterface $vocabulary
+     * @param $flush
+     * @return
      */
-    public function saveVocabulary(VocabularyInterface $vocabulary)
+    public function saveVocabulary(VocabularyInterface $vocabulary, $flush = true)
     {
-        return $this->getDefaultTaxonomy()->saveVocabulary($vocabulary);
+        return $this->getDefaultTaxonomy()->saveVocabulary($vocabulary, $flush);
     }
 
     /**
@@ -166,11 +168,11 @@ class TaxonomyRegistry implements TaxonomyServiceInterface
 
     /**
      * @param TermInterface $term
-     * @throws \DomainException
+     * @param bool $flush
      */
-    public function saveTerm(TermInterface $term)
+    public function saveTerm(TermInterface $term, $flush = true)
     {
-        return $this->getDefaultTaxonomy()->saveTerm($term);
+        return $this->getDefaultTaxonomy()->saveTerm($term, $flush);
     }
 
     /**
