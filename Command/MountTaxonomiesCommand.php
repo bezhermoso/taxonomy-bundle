@@ -35,7 +35,7 @@ class MountTaxonomiesCommand extends ContainerAwareCommand
         $service = $this->getContainer()->get('al_taxonomy.taxonomy_service');
         $loader = $this->getContainer()->get('al_taxonomy.taxonomy_loader');
 
-        if ($input->getOption('em') === null) {
+        if ($input->getOption('em') !== null) {
             $service = $service->getTaxonomyForManager($input->getOption('em'));
         }
 
