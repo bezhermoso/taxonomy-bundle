@@ -191,4 +191,28 @@ class TaxonomyRegistry implements TaxonomyServiceInterface
     {
         return $this->getDefaultTaxonomy()->findTermsInVocabulary($vocabulary);
     }
+
+    /**
+     * @return string
+     */
+    public function getTermClass()
+    {
+        return $this->getDefaultTaxonomy()->getTermClass();
+    }
+
+    /**
+     * @return string
+     */
+    public function getVocabularyClass()
+    {
+        return $this->getDefaultTaxonomy()->getVocabularyClass();
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityTermClass()
+    {
+        return $this->getDefaultTaxonomy()->getEntityTermClass();
+    }
 }
