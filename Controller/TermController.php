@@ -2,6 +2,7 @@
 
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Controller;
 
+use ActiveLAMP\Taxonomy\Entity\TermInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -28,9 +29,8 @@ class TermController extends Controller
     public function indexAction($vocabulary_id)
     {
         $vocabulary = $this->getVocabulary($vocabulary_id);
-        $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('ALTaxonomyBundle:Term')->findBy(array('vocabulary' => $vocabulary));
+        $entities = $this->get('al_taxonomy.taxonomy_service')->findTermsInVocabulary($vocabulary);
 
         return array(
             'vocabulary' => $vocabulary,
@@ -47,17 +47,14 @@ class TermController extends Controller
     public function createAction(Request $request, $vocabulary_id)
     {
         $vocabulary = $this->getVocabulary($vocabulary_id);
-        $entity = new Term();
+        $entity = $this->get('al_taxonomy.taxonomy_service')->createTerm($vocabulary);
+
         $form = $this->createCreateForm($entity, $vocabulary_id);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $entity->setVocabulary($vocabulary);
 
-            // @var \Doctrine\Common\Persistence\ObjectManager
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
+            $this->get('al_taxonomy.taxonomy_service')->saveTerm($entity);
 
             return $this->redirect($this->generateUrl('al_taxonomy_new_term', array('vocabulary_id' => $vocabulary_id)));
         }
@@ -96,11 +93,13 @@ class TermController extends Controller
      */
     public function newAction($vocabulary_id)
     {
-        $entity = new Term();
+        $vocabulary = $this->getVocabulary($vocabulary_id);
+
+        $entity = $this->get('al_taxonomy.taxonomy_service')->createTerm($vocabulary);
         $form   = $this->createCreateForm($entity, $vocabulary_id);
 
         return array(
-            'vocabulary' => $this->getVocabulary($vocabulary_id),
+            'vocabulary' => $vocabulary,
             'entity' => $entity,
             'form'   => $form->createView(),
         );
@@ -117,7 +116,7 @@ class TermController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ALTaxonomyBundle:Term')->find($id);
+        $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getTermClass())->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Term entity.');
@@ -143,7 +142,7 @@ class TermController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ALTaxonomyBundle:Term')->find($id);
+        $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getTermClass())->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Term entity.');
@@ -167,7 +166,7 @@ class TermController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(Term $entity, $vocabulary_id)
+    private function createEditForm(TermInterface $entity, $vocabulary_id)
     {
         $form = $this->createForm(new TermType(), $entity, array(
             'action' => $this->generateUrl('al_taxonomy_update_term', array('id' => $entity->getId(), 'vocabulary_id' => $vocabulary_id)),
@@ -187,7 +186,7 @@ class TermController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ALTaxonomyBundle:Term')->find($id);
+        $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getTermClass())->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Term entity.');
@@ -223,14 +222,14 @@ class TermController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ALTaxonomyBundle:Term')->find($id);
+            $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getTermClass())->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Term entity.');
             }
 
-            $em->remove($entity);
-            $em->flush();
+            $this->get('al_taxonomy.taxonomy_service')->deleteTerm($entity);
+
         }
 
         return $this->redirect($this->generateUrl('al_taxonomy_list_terms', array('vocabulary_id' => $vocabulary_id)));
@@ -239,7 +238,8 @@ class TermController extends Controller
     /**
      * Creates a form to delete a Term entity by id.
      *
-     * @param mixed $id The entity id
+     * @param int $id The entity id
+     * @param int $vocabulary_id
      *
      * @return \Symfony\Component\Form\Form The form
      */
@@ -261,6 +261,8 @@ class TermController extends Controller
      */
     private function getVocabulary($vocabulary_id) {
         $em = $this->getDoctrine()->getManager();
-        return $em->getRepository('ALTaxonomyBundle:Vocabulary')->find($vocabulary_id);
+        return $em
+            ->getRepository($this->get('al_taxonomy.taxonomy_service')->getVocabularyClass())
+            ->find($vocabulary_id);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ActiveLAMP\Bundle\TaxonomyBundle\Controller;
 
+use ActiveLAMP\Taxonomy\Entity\VocabularyInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -27,7 +28,7 @@ class TaxonomyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('ALTaxonomyBundle:Vocabulary')->findAll();
+        $entities = $this->get('al_taxonomy.taxonomy_service')->findAllVocabularies();
 
         return array(
             'entities' => $entities,
@@ -42,14 +43,13 @@ class TaxonomyController extends Controller
      */
     public function createAction(Request $request)
     {
-        $entity = new Vocabulary();
+        $entity = $this->get('al_taxonomy.taxonomy_service')->createVocabulary();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
+
+            $this->get('al_taxonomy.taxonomy_service')->saveVocabulary($entity);
 
             return $this->redirect($this->generateUrl('al_taxonomy_list_vocabularies'));
         }
@@ -67,7 +67,7 @@ class TaxonomyController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Vocabulary $entity)
+    private function createCreateForm(VocabularyInterface $entity)
     {
         $form = $this->createForm(new VocabularyType(), $entity, array(
             'action' => $this->generateUrl('al_taxonomy_create_vocabulary'),
@@ -86,7 +86,7 @@ class TaxonomyController extends Controller
      */
     public function newAction()
     {
-        $entity = new Vocabulary();
+        $entity = $this->get('al_taxonomy.taxonomy_service')->createVocabulary();
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -106,7 +106,7 @@ class TaxonomyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ALTaxonomyBundle:Vocabulary')->find($id);
+        $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getVocabularyClass())->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Vocabulary entity.');
@@ -132,7 +132,7 @@ class TaxonomyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ALTaxonomyBundle:Vocabulary')->find($id);
+        $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getVocabularyClass())->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Vocabulary entity.');
@@ -155,7 +155,7 @@ class TaxonomyController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(Vocabulary $entity)
+    private function createEditForm(VocabularyInterface $entity)
     {
         $form = $this->createForm(new VocabularyType(), $entity, array(
             'action' => $this->generateUrl('al_taxonomy_update_vocabulary', array('id' => $entity->getId())),
@@ -175,7 +175,7 @@ class TaxonomyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ALTaxonomyBundle:Vocabulary')->find($id);
+        $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getVocabularyClass())->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Vocabulary entity.');
@@ -210,7 +210,7 @@ class TaxonomyController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ALTaxonomyBundle:Vocabulary')->find($id);
+            $entity = $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getVocabularyClass())->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Vocabulary entity.');
@@ -243,19 +243,21 @@ class TaxonomyController extends Controller
     private function getTerms($vocabulary_id)
     {
         $em = $this->getDoctrine()->getManager();
-        return $em->getRepository('ALTaxonomyBundle:Term')->findBy(array('vocabulary' => $this->getVocabulary($vocabulary_id)));
+        return $em
+            ->getRepository($this->get('al_taxonomy.taxonomy_service')->getTermClass())
+            ->findBy(array('vocabulary' => $this->getVocabulary($vocabulary_id)));
     }
 
     /**
      * Gets a vocabulary giving a vocabulary id.
      *
      * @param $vocabulary_id
-     * @return \ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary
+     * @return VocabularyInterface
      */
     private function getVocabulary($vocabulary_id)
     {
         /** @var \Doctrine\Common\Persistence\ObjectManager $em */
         $em = $this->getDoctrine()->getManager();
-        return $em->getRepository('ALTaxonomyBundle:Vocabulary')->find($vocabulary_id);
+        return $em->getRepository($this->get('al_taxonomy.taxonomy_service')->getVocabularyClass())->find($vocabulary_id);
     }
 }

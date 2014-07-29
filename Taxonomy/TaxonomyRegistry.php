@@ -215,4 +215,30 @@ class TaxonomyRegistry implements TaxonomyServiceInterface
     {
         return $this->getDefaultTaxonomy()->getEntityTermClass();
     }
+
+    /**
+     * @return VocabularyInterface
+     */
+    public function createVocabulary()
+    {
+        return $this->getDefaultTaxonomy()->createVocabulary();
+    }
+
+    /**
+     * @param VocabularyInterface $vocabulary
+     *
+     * @return TermInterface
+     */
+    public function createTerm(VocabularyInterface $vocabulary = null)
+    {
+        return $this->getDefaultTaxonomy()->createTerm($vocabulary);
+    }
+
+    /**
+     * @return EntityTermInterface
+     */
+    public function createEntityTerm()
+    {
+        return $this->createEntityTerm();
+    }
 }

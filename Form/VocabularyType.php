@@ -27,7 +27,7 @@ class VocabularyType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary'
+            //'data_class' => 'ActiveLAMP\Bundle\TaxonomyBundle\Entity\Vocabulary'
         ));
     }
 
